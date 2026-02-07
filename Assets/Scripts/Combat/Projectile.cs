@@ -35,31 +35,34 @@ public class Projectile : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.isTrigger) return;
-        if (_attackerCollider && other == _attackerCollider) return;
 
-        if (!AgentRoot.TryGetById(_targetId, out var target))
+        if (_attackerCollider && other == _attackerCollider)
         {
             Destroy(gameObject);
             return;
         }
 
-        if (target.PickupBodyCollider != other)
+        if (AgentRoot.TryGetByCollider(other, out var otherAgent))
         {
+            if (otherAgent.AgentId != _attackerId)
+            {
+                var info = new DamageInfo
+                {
+                    attackerAgentId = _attackerId,
+                    targetAgentId   = otherAgent.AgentId,
+                    damage          = _damage,
+                    hpBefore        = -1,
+                    hpAfter         = -1,
+                    hitPoint        = transform.position
+                };
+
+                _damageEventChannel?.Raise(info);
+            }
+
             Destroy(gameObject);
             return;
         }
 
-        var info = new DamageInfo
-        {
-            attackerAgentId = _attackerId,
-            targetAgentId   = _targetId,
-            damage          = _damage,
-            hpBefore        = -1,
-            hpAfter         = -1,
-            hitPoint        = transform.position
-        };
-
-        _damageEventChannel?.Raise(info);
         Destroy(gameObject);
     }
 }

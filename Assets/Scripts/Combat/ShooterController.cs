@@ -10,6 +10,7 @@ public class ShooterController : MonoBehaviour
     [SerializeField] private int weaponDamage = 10;
     [SerializeField] private float shotsPerSecond = 2f;
     [SerializeField] private Transform shotOrigin;
+    [SerializeField] private float turnSpeed = 720f;
 
     [Header("Events In (Action Channel)")]
     [SerializeField] private EnteredWeaponRangeActionChannelSO enteredRangeAction;
@@ -87,18 +88,21 @@ public class ShooterController : MonoBehaviour
             return;
         }
 
-        Transform origin = shotOrigin ? shotOrigin : agentRoot.transform;
-        Vector3 originPos = origin.position;
         Vector3 targetPos = _currentTarget.PickupBodyCollider
             ? _currentTarget.PickupBodyCollider.bounds.center
             : _currentTarget.transform.position;
 
+        FaceTarget(targetPos);
+
+        Transform origin = shotOrigin ? shotOrigin : agentRoot.transform;
+        Vector3 originPos = origin.position;
         Vector3 dir = targetPos - originPos;
         if (dir.sqrMagnitude < 0.0001f)
             dir = origin.forward;
 
-        Quaternion rotation = Quaternion.LookRotation(dir.normalized, Vector3.up);
-
+        Quaternion rotation = shotOrigin
+            ? shotOrigin.rotation
+            : Quaternion.LookRotation(dir.normalized, Vector3.up);
         Projectile proj = Instantiate(projectilePrefab, originPos, rotation);
         proj.Initialize(
             attackerId: agentRoot.AgentId, 
@@ -115,6 +119,28 @@ public class ShooterController : MonoBehaviour
             shotOrigin = origin;
         else if (agentRoot)
             shotOrigin = agentRoot.HandSocket;
+    }
+
+    private void FaceTarget(Vector3 targetPos)
+    {
+        if (!agentRoot) return;
+
+        Vector3 toTarget = targetPos - agentRoot.transform.position;
+        toTarget.y = 0f;
+        if (toTarget.sqrMagnitude < 0.0001f) return;
+
+        Quaternion desired = Quaternion.LookRotation(toTarget.normalized, Vector3.up);
+        if (turnSpeed <= 0f)
+        {
+            agentRoot.transform.rotation = desired;
+            return;
+        }
+
+        agentRoot.transform.rotation = Quaternion.RotateTowards(
+            agentRoot.transform.rotation,
+            desired,
+            turnSpeed * Time.deltaTime
+        );
     }
 
     public void StopShooting()
