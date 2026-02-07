@@ -3,6 +3,7 @@ using UnityEngine;
 public class FinishLine : MonoBehaviour
 {
     private bool raceFinished = false;
+    [SerializeField] private GameMenuManager menuManager;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -12,13 +13,9 @@ public class FinishLine : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             raceFinished = true;
-            
-            
-            GameMenuManager manager = FindObjectOfType<GameMenuManager>();
-            if (manager != null)
-            {
-                manager.OnAgentReachedGoal(other.name);
-            }
+
+            if (menuManager != null)
+                menuManager.OnAgentReachedGoal(other.name);
         }
     }
 }

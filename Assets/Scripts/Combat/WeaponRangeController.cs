@@ -19,14 +19,7 @@ public class WeaponRangeController : MonoBehaviour
     private void Awake()
     {
         if (!rangeCollider)
-        {
-            var rangeTransform = transform.Find("ShootingRange");
-            if (rangeTransform)
-                rangeCollider = rangeTransform.GetComponent<SphereCollider>();
-
-            if (!rangeCollider)
-                rangeCollider = GetComponentInChildren<SphereCollider>(true);
-        }
+            Debug.LogWarning($"[WeaponRangeController] Range collider not set on {name}.");
 
         // Скрываем радиус при старте
         ToggleRange(false);
@@ -70,8 +63,7 @@ public class WeaponRangeController : MonoBehaviour
         if (!agentRoot || !enteredRangeAction) return;
         if (other.isTrigger) return;
 
-        // Проверяем, кто вошел в радиус
-        var otherAgent = other.GetComponentInParent<AgentRoot>();
+        if (!AgentRoot.TryGetByCollider(other, out var otherAgent)) return;
 
         // Если это агент и это НЕ я
         if (otherAgent != null && otherAgent.AgentId != agentRoot.AgentId)
@@ -87,8 +79,7 @@ public class WeaponRangeController : MonoBehaviour
         if (!agentRoot || !enteredRangeAction) return;
         if (other.isTrigger) return;
 
-        var otherAgent = other.GetComponentInParent<AgentRoot>();
-        if (otherAgent == null) return;
+        if (!AgentRoot.TryGetByCollider(other, out var otherAgent)) return;
 
         if (otherAgent.AgentId == _currentTargetId)
         {

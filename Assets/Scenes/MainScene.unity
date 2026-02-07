@@ -2874,7 +2874,7 @@ PrefabInstance:
     - target: {fileID: 3158346107216370576, guid: b9c8f26138d512c4c958e41b55f4127a, type: 3}
       propertyPath: weaponPrefab
       value: 
-      objectReference: {fileID: 2515095295300594571, guid: 5041f387f2e8ec2448a6ddebc7c4b8bb, type: 3}
+      objectReference: {fileID: 5123456789012345678, guid: 5041f387f2e8ec2448a6ddebc7c4b8bb, type: 3}
     - target: {fileID: 6942111649144409117, guid: b9c8f26138d512c4c958e41b55f4127a, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4.724
@@ -3189,6 +3189,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2945f1bbf91f84354aa788b816758814, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FinishLine
+  menuManager: {fileID: 1166268643}
 --- !u!1 &1808974320
 GameObject:
   m_ObjectHideFlags: 0
@@ -3657,7 +3658,7 @@ PrefabInstance:
     - target: {fileID: 3158346107216370576, guid: b9c8f26138d512c4c958e41b55f4127a, type: 3}
       propertyPath: weaponPrefab
       value: 
-      objectReference: {fileID: 2515095295300594571, guid: 5041f387f2e8ec2448a6ddebc7c4b8bb, type: 3}
+      objectReference: {fileID: 5123456789012345678, guid: 5041f387f2e8ec2448a6ddebc7c4b8bb, type: 3}
     - target: {fileID: 6942111649144409117, guid: b9c8f26138d512c4c958e41b55f4127a, type: 3}
       propertyPath: m_LocalPosition.x
       value: -9.1004

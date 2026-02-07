@@ -4,7 +4,7 @@ public class WeaponEquipper : MonoBehaviour
 {
     [SerializeField] private AgentRoot agentRoot;
     [SerializeField] private Transform handSocket;
-    [SerializeField] private string muzzleName = "Muzzle";
+    [SerializeField] private ShooterController shooter;
 
     [Header("Channel")]
     [SerializeField] private WeaponPickedEventChannelSO weaponPickedChannel;
@@ -12,7 +12,7 @@ public class WeaponEquipper : MonoBehaviour
     [Header("Broadcasting To")]
     [SerializeField] private WeaponEquippedActionChannelSO weaponEquippedAction;
 
-    private GameObject _currentWeaponInstance;
+    private WeaponView _currentWeaponInstance;
 
     private bool HasWeapon => _currentWeaponInstance != null;
 
@@ -59,29 +59,11 @@ public class WeaponEquipper : MonoBehaviour
             _currentWeaponInstance.transform.localPosition = Vector3.zero;
             _currentWeaponInstance.transform.localRotation = Quaternion.identity;
 
-            var shooter = agentRoot.GetComponent<ShooterController>();
             if (shooter)
-            {
-                var muzzle = FindMuzzle(_currentWeaponInstance.transform);
-                shooter.SetShotOrigin(muzzle ? muzzle : handSocket);
-            }
+                shooter.SetShotOrigin(_currentWeaponInstance.Muzzle ? _currentWeaponInstance.Muzzle : handSocket);
 
             if (weaponEquippedAction)
                 weaponEquippedAction.Raise(agentRoot.AgentId, data.weaponId);
         }
-    }
-
-    private Transform FindMuzzle(Transform weaponRoot)
-    {
-        if (!weaponRoot) return null;
-
-        var transforms = weaponRoot.GetComponentsInChildren<Transform>(true);
-        foreach (var t in transforms)
-        {
-            if (t.name == muzzleName)
-                return t;
-        }
-
-        return null;
     }
 }

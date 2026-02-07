@@ -576,6 +576,7 @@ MonoBehaviour:
   handSocket: {fileID: 8222042736622563761}
   animator: {fileID: 7478821122308937794}
   pickupBodyCollider: {fileID: 138252954504703119}
+  health: {fileID: 5501668445505641155}
 --- !u!114 &5501668445505641155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -640,6 +641,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponEquipper
   agentRoot: {fileID: 3201012593455324753}
   handSocket: {fileID: 8222042736622563761}
+  shooter: {fileID: 7617048180447502771}
   weaponPickedChannel: {fileID: 11400000, guid: 41b7f059c40789b41bc6ce9bb1f009e8, type: 2}
   weaponEquippedAction: {fileID: 11400000, guid: 0483af2247153c14b8b37ecaff7b72a3, type: 2}
 --- !u!114 &5992691151653486142

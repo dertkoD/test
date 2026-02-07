@@ -37,17 +37,13 @@ public class Projectile : MonoBehaviour
         if (other.isTrigger) return;
         if (_attackerCollider && other == _attackerCollider) return;
 
-        var otherAgent = other.GetComponentInParent<AgentRoot>();
-        if (otherAgent != null && otherAgent.AgentId == _attackerId)
-            return;
-
-        if (otherAgent != null && otherAgent.AgentId != _targetId)
+        if (!AgentRoot.TryGetById(_targetId, out var target))
         {
             Destroy(gameObject);
             return;
         }
 
-        if (otherAgent == null)
+        if (target.PickupBodyCollider != other)
         {
             Destroy(gameObject);
             return;

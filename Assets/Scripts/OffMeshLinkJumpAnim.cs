@@ -10,8 +10,6 @@ public class OffMeshLinkJumpAnim : MonoBehaviour
 
     private bool wasOnLink;
 
-    void Reset() => agent = GetComponent<NavMeshAgent>();
-
     void Update()
     {
         if (!agent || !animator) return;

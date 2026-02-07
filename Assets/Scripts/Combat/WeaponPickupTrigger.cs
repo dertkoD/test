@@ -4,7 +4,7 @@ public class WeaponPickupTrigger : MonoBehaviour
 {
     [Header("Weapon")]
     [SerializeField] private int weaponId = 1;
-    [SerializeField] private GameObject weaponPrefab;
+    [SerializeField] private WeaponView weaponPrefab;
 
     [Header("Filter")]
     [SerializeField] private LayerMask allowedPickerMask; // AgentBody

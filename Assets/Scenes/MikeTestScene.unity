@@ -3146,6 +3146,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2945f1bbf91f84354aa788b816758814, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FinishLine
+  menuManager: {fileID: 1166268643}
 --- !u!1 &1808974320
 GameObject:
   m_ObjectHideFlags: 0

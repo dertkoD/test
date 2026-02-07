@@ -11,9 +11,10 @@ public class AnimeGirlParticalJumpBehavior : StateMachineBehaviour
     {
         base.OnStateEnter(animator, stateInfo, layerIndex, controller);
         if (!_girlController)
-            _girlController = animator.GetComponent<AnimeGirlController>();
-        
-        _girlController.PlayJumpEffect();
+            AnimeGirlController.TryGetByAnimator(animator, out _girlController);
+
+        if (_girlController)
+            _girlController.PlayJumpEffect();
     }
     
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex,
@@ -21,9 +22,10 @@ public class AnimeGirlParticalJumpBehavior : StateMachineBehaviour
     {
         base.OnStateExit(animator, stateInfo, layerIndex, controller);
         if (!_girlController)
-            _girlController = animator.GetComponent<AnimeGirlController>();
-        
-        _girlController.PlayLandingEffect();
+            AnimeGirlController.TryGetByAnimator(animator, out _girlController);
+
+        if (_girlController)
+            _girlController.PlayLandingEffect();
     }
 
     

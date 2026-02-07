@@ -80,7 +80,7 @@ public class ShooterController : MonoBehaviour
         if (_currentTarget == null)
             return;
 
-        var targetHealth = _currentTarget.GetComponent<Health>();
+        var targetHealth = _currentTarget.Health;
         if (targetHealth && targetHealth.IsDead)
         {
             StopShooting();
@@ -131,16 +131,6 @@ public class ShooterController : MonoBehaviour
 
     private AgentRoot ResolveTarget(int targetId)
     {
-        if (AgentRoot.TryGetById(targetId, out var target))
-            return target;
-
-        var roots = FindObjectsOfType<AgentRoot>();
-        foreach (var root in roots)
-        {
-            if (root && root.AgentId == targetId)
-                return root;
-        }
-
-        return null;
+        return AgentRoot.TryGetById(targetId, out var target) ? target : null;
     }
 }

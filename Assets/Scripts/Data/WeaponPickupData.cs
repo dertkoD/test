@@ -12,5 +12,5 @@ public struct WeaponPickupData
     public WeaponPickupTrigger pickupTrigger;
 
     public int weaponId;
-    public GameObject weaponPrefab;
+    public WeaponView weaponPrefab;
 }
