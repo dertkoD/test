@@ -27,9 +27,9 @@ public class Health : MonoBehaviour
     private void OnEnable()
     {
         if (damageEventChannel) damageEventChannel.Register(OnDamageReceived);
-        
-        // initial ui update
-        healthChangedAction?.Raise(agentRoot.AgentId, currentHp, maxHp);
+
+        if (agentRoot)
+            healthChangedAction?.Raise(agentRoot.AgentId, currentHp, maxHp);
     }
 
     private void OnDisable()

@@ -730,6 +730,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6dae1d91906e6d945b0c387ecd6f4607, type: 3}
       insertIndex: -1
       addedObject: {fileID: 640758802718820463}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6dae1d91906e6d945b0c387ecd6f4607, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8234567890123456789}
   m_SourcePrefab: {fileID: 100100000, guid: 6dae1d91906e6d945b0c387ecd6f4607, type: 3}
 --- !u!4 &2678062261165334405 stripped
 Transform:
@@ -910,6 +913,23 @@ MonoBehaviour:
   animator: {fileID: 7923338160057671132}
   weaponEquipped: {fileID: 11400000, guid: 0483af2247153c14b8b37ecaff7b72a3, type: 2}
   hasWeaponParam: HasWeapon
+--- !u!114 &8234567890123456789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3485406143046835484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77e6048c5f3b1498c8b9bb8906510db8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponRangeController
+  agentRoot: {fileID: 3882453569244748311}
+  rangeCollider: {fileID: 6761755760063727157}
+  rangeVisual: {fileID: 0}
+  weaponEquippedAction: {fileID: 11400000, guid: 0483af2247153c14b8b37ecaff7b72a3, type: 2}
+  enteredRangeAction: {fileID: 11400000, guid: 254e7c570ad92504abbfffb96c20bd37, type: 2}
 --- !u!114 &640758802718820463
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -14,8 +14,20 @@ public class WeaponRangeController : MonoBehaviour
     [Header("Broadcasting To")]
     [SerializeField] private EnteredWeaponRangeActionChannelSO enteredRangeAction;
 
+    private int _currentTargetId = -1;
+
     private void Awake()
     {
+        if (!rangeCollider)
+        {
+            var rangeTransform = transform.Find("ShootingRange");
+            if (rangeTransform)
+                rangeCollider = rangeTransform.GetComponent<SphereCollider>();
+
+            if (!rangeCollider)
+                rangeCollider = GetComponentInChildren<SphereCollider>(true);
+        }
+
         // Скрываем радиус при старте
         ToggleRange(false);
     }
@@ -56,6 +68,7 @@ public class WeaponRangeController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (!agentRoot || !enteredRangeAction) return;
+        if (other.isTrigger) return;
 
         // Проверяем, кто вошел в радиус
         var otherAgent = other.GetComponentInParent<AgentRoot>();
@@ -64,7 +77,23 @@ public class WeaponRangeController : MonoBehaviour
         if (otherAgent != null && otherAgent.AgentId != agentRoot.AgentId)
         {
             // Сообщаем ShooterController'у начать огонь
-            enteredRangeAction.Raise(agentRoot.AgentId, otherAgent.AgentId);
+            _currentTargetId = otherAgent.AgentId;
+            enteredRangeAction.Raise(agentRoot.AgentId, _currentTargetId);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (!agentRoot || !enteredRangeAction) return;
+        if (other.isTrigger) return;
+
+        var otherAgent = other.GetComponentInParent<AgentRoot>();
+        if (otherAgent == null) return;
+
+        if (otherAgent.AgentId == _currentTargetId)
+        {
+            _currentTargetId = -1;
+            enteredRangeAction.Raise(agentRoot.AgentId, -1);
         }
     }
 }
