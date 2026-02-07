@@ -881,6 +881,14 @@ MonoBehaviour:
   projectilePrefab: {fileID: 4110924979298678651, guid: b7767ae65986da64fb9124d49fdcee51, type: 3}
   weaponDamage: 10
   shotsPerSecond: 2
+  shotOrigin: {fileID: 0}
+  aimPivot: {fileID: 0}
+  agentNav: {fileID: 7985954327109000862}
+  instantTurn: 1
+  turnSpeed: 720
+  aimAngleThreshold: 5
+  moveSpeedThreshold: 0.05
+  muzzleForwardOffset: 0.05
   enteredRangeAction: {fileID: 11400000, guid: 254e7c570ad92504abbfffb96c20bd37, type: 2}
   damageEventChannel: {fileID: 11400000, guid: 2a1591b2a9e998e4990a66eddba63171, type: 2}
 --- !u!114 &2952880271107681767

@@ -1,5 +1,6 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class ShooterController : MonoBehaviour
 {
@@ -10,7 +11,13 @@ public class ShooterController : MonoBehaviour
     [SerializeField] private int weaponDamage = 10;
     [SerializeField] private float shotsPerSecond = 2f;
     [SerializeField] private Transform shotOrigin;
+    [SerializeField] private Transform aimPivot;
+    [SerializeField] private NavMeshAgent agentNav;
+    [SerializeField] private bool instantTurn = true;
     [SerializeField] private float turnSpeed = 720f;
+    [SerializeField] private float aimAngleThreshold = 5f;
+    [SerializeField] private float moveSpeedThreshold = 0.05f;
+    [SerializeField] private float muzzleForwardOffset = 0.05f;
 
     [Header("Events In (Action Channel)")]
     [SerializeField] private EnteredWeaponRangeActionChannelSO enteredRangeAction;
@@ -26,6 +33,9 @@ public class ShooterController : MonoBehaviour
     {
         if (!shotOrigin && agentRoot)
             shotOrigin = agentRoot.HandSocket;
+
+        if (!aimPivot && agentRoot)
+            aimPivot = agentRoot.transform;
     }
 
     private void OnEnable()
@@ -38,6 +48,17 @@ public class ShooterController : MonoBehaviour
         if (enteredRangeAction) enteredRangeAction.OnEvent -= OnEnteredRange;
 
         StopShooting();
+    }
+
+    private void Update()
+    {
+        if (_currentTargetId == -1 || !_currentTarget) return;
+
+        Vector3 targetPos = _currentTarget.PickupBodyCollider
+            ? _currentTarget.PickupBodyCollider.bounds.center
+            : _currentTarget.transform.position;
+
+        AimAtTarget(targetPos);
     }
 
     private void OnEnteredRange(int attackerId, int targetId)
@@ -53,6 +74,14 @@ public class ShooterController : MonoBehaviour
 
         _currentTargetId = targetId;
         _currentTarget = ResolveTarget(targetId);
+
+        if (_currentTarget)
+        {
+            Vector3 targetPos = _currentTarget.PickupBodyCollider
+                ? _currentTarget.PickupBodyCollider.bounds.center
+                : _currentTarget.transform.position;
+            AimAtTarget(targetPos);
+        }
 
         _shootRoutine ??= StartCoroutine(ShootLoop());
     }
@@ -88,22 +117,27 @@ public class ShooterController : MonoBehaviour
             return;
         }
 
+        if (IsMoving())
+            return;
+
         Vector3 targetPos = _currentTarget.PickupBodyCollider
             ? _currentTarget.PickupBodyCollider.bounds.center
             : _currentTarget.transform.position;
 
-        FaceTarget(targetPos);
+        if (!AimAtTarget(targetPos))
+            return;
 
         Transform origin = shotOrigin ? shotOrigin : agentRoot.transform;
         Vector3 originPos = origin.position;
         Vector3 dir = targetPos - originPos;
         if (dir.sqrMagnitude < 0.0001f)
-            dir = origin.forward;
+            dir = (aimPivot ? aimPivot.forward : origin.forward);
 
-        Quaternion rotation = shotOrigin
-            ? shotOrigin.rotation
-            : Quaternion.LookRotation(dir.normalized, Vector3.up);
-        Projectile proj = Instantiate(projectilePrefab, originPos, rotation);
+        Quaternion rotation = Quaternion.LookRotation(dir.normalized, Vector3.up);
+        float offset = Mathf.Max(0f, muzzleForwardOffset);
+        Vector3 spawnPos = originPos + (rotation * Vector3.forward * offset);
+
+        Projectile proj = Instantiate(projectilePrefab, spawnPos, rotation);
         proj.Initialize(
             attackerId: agentRoot.AgentId, 
             targetId: targetId,
@@ -121,19 +155,20 @@ public class ShooterController : MonoBehaviour
             shotOrigin = agentRoot.HandSocket;
     }
 
-    private void FaceTarget(Vector3 targetPos)
+    private bool AimAtTarget(Vector3 targetPos)
     {
-        if (!agentRoot) return;
+        if (!agentRoot) return false;
 
-        Vector3 toTarget = targetPos - agentRoot.transform.position;
+        Transform pivot = aimPivot ? aimPivot : agentRoot.transform;
+        Vector3 toTarget = targetPos - pivot.position;
         toTarget.y = 0f;
-        if (toTarget.sqrMagnitude < 0.0001f) return;
+        if (toTarget.sqrMagnitude < 0.0001f) return false;
 
         Quaternion desired = Quaternion.LookRotation(toTarget.normalized, Vector3.up);
-        if (turnSpeed <= 0f)
+        if (instantTurn || turnSpeed <= 0f)
         {
             agentRoot.transform.rotation = desired;
-            return;
+            return true;
         }
 
         agentRoot.transform.rotation = Quaternion.RotateTowards(
@@ -141,6 +176,25 @@ public class ShooterController : MonoBehaviour
             desired,
             turnSpeed * Time.deltaTime
         );
+
+        float angle = Vector3.Angle(pivot.forward, toTarget.normalized);
+        return angle <= aimAngleThreshold;
+    }
+
+    private bool IsMoving()
+    {
+        if (!agentNav) return false;
+
+        if (agentNav.pathPending)
+            return true;
+
+        if (agentNav.velocity.sqrMagnitude > moveSpeedThreshold * moveSpeedThreshold)
+            return true;
+
+        if (agentNav.hasPath && agentNav.remainingDistance > agentNav.stoppingDistance + 0.01f)
+            return true;
+
+        return false;
     }
 
     public void StopShooting()
