@@ -7,6 +7,7 @@ public class WeaponRangeController : MonoBehaviour
     [Header("Range Components")]
     [SerializeField] private SphereCollider rangeCollider; // Триггер радиуса
     [SerializeField] private GameObject rangeVisual;       // Визуальный круг
+    [SerializeField] private LayerMask targetMask;
 
     [Header("Listening To")]
     [SerializeField] private WeaponEquippedActionChannelSO weaponEquippedAction;
@@ -18,6 +19,13 @@ public class WeaponRangeController : MonoBehaviour
 
     private void Awake()
     {
+        if (targetMask.value == 0)
+        {
+            int layer = LayerMask.NameToLayer("AgentBody");
+            if (layer >= 0)
+                targetMask = 1 << layer;
+        }
+
         // Скрываем радиус при старте
         ToggleRange(false);
     }
@@ -59,6 +67,10 @@ public class WeaponRangeController : MonoBehaviour
     {
         if (!agentRoot || !enteredRangeAction) return;
         if (other.isTrigger) return;
+        if (other == agentRoot.PickupBodyCollider) return;
+
+        int bit = 1 << other.gameObject.layer;
+        if ((targetMask.value & bit) == 0) return;
 
         if (!AgentRoot.TryGetByCollider(other, out var otherAgent)) return;
 
@@ -75,6 +87,10 @@ public class WeaponRangeController : MonoBehaviour
     {
         if (!agentRoot || !enteredRangeAction) return;
         if (other.isTrigger) return;
+        if (other == agentRoot.PickupBodyCollider) return;
+
+        int bit = 1 << other.gameObject.layer;
+        if ((targetMask.value & bit) == 0) return;
 
         if (!AgentRoot.TryGetByCollider(other, out var otherAgent)) return;
 
