@@ -24,16 +24,10 @@ public class AgentRoot : MonoBehaviour
     {
         if (pickupBodyCollider)
         {
-            if (ColliderRegistry.TryGetValue(pickupBodyCollider, out var existing) && existing != this)
-                Debug.LogWarning($"[AgentRoot] Collider already registered by {existing.name}, overriding with {name}.");
-
             ColliderRegistry[pickupBodyCollider] = this;
         }
 
         if (agentId == 0) return;
-
-        if (Registry.TryGetValue(agentId, out var existing) && existing != this)
-            Debug.LogWarning($"[AgentRoot] Duplicate agentId {agentId} on {name}, replacing {existing.name}.");
 
         Registry[agentId] = this;
     }

@@ -18,9 +18,6 @@ public class WeaponRangeController : MonoBehaviour
 
     private void Awake()
     {
-        if (!rangeCollider)
-            Debug.LogWarning($"[WeaponRangeController] Range collider not set on {name}.");
-
         // Скрываем радиус при старте
         ToggleRange(false);
     }

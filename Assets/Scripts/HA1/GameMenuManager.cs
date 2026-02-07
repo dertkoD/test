@@ -22,23 +22,11 @@ public class GameMenuManager : MonoBehaviour
 
     private void Awake()
     {
-        ValidateReferences();
     }
 
     private void Start()
     {
         InitializeMenu();
-    }
-
-    private void ValidateReferences()
-    {
-        Debug.Assert(startMenuPanel != null, "StartMenuPanel not assigned");
-        Debug.Assert(gameHUD != null, "GameHUD not assigned");
-        Debug.Assert(startButton != null, "StartButton not assigned");
-        Debug.Assert(instructionsText != null, "InstructionsText not assigned");
-        Debug.Assert(raceManager != null, "RaceManager not assigned");
-        Debug.Assert(cameraRail != null, "CameraRail not assigned");
-        Debug.Assert(victoryText != null, "VictoryText not assigned");
     }
 
     private void InitializeMenu()
@@ -68,7 +56,6 @@ public class GameMenuManager : MonoBehaviour
             victoryText.text = agentName + " Win!";
           
             raceManager.SetGameActive(false);
-            Debug.Log("Winner: " + agentName);
         }
     }
 
