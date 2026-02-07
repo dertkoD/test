@@ -109,6 +109,14 @@ public class ShooterController : MonoBehaviour
             );
     }
 
+    public void SetShotOrigin(Transform origin)
+    {
+        if (origin)
+            shotOrigin = origin;
+        else if (agentRoot)
+            shotOrigin = agentRoot.HandSocket;
+    }
+
     public void StopShooting()
     {
         _currentTargetId = -1;
