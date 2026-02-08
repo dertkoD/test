@@ -2405,12 +2405,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameMenuManager
   startMenuPanel: {fileID: 1978861687}
-  endMenuPanel: {fileID: 0}
+  endMenuPanel: {fileID: 1932313597}
   startButton: {fileID: 1373678376}
-  restartButton: {fileID: 0}
+  restartButton: {fileID: 205753770}
   instructionsText: {fileID: 421268858}
   victoryText: {fileID: 1664143408}
-  gameOverAction: {fileID: 0}
+  gameOverAction: {fileID: 11400000, guid: 7e1b2dab97af1c046bb8ae63d2113abf, type: 2}
   raceManager: {fileID: 500111279}
   cameraRail: {fileID: 330585548}
   agent1Name: Swat
