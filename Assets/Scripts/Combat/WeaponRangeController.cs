@@ -16,9 +16,14 @@ public class WeaponRangeController : MonoBehaviour
     [Header("Broadcasting To")]
     [SerializeField] private EnteredWeaponRangeActionChannelSO enteredRangeAction;
     [SerializeField] private string aimParam = "Aim";
+    [SerializeField] private bool controlUpperBodyLayer = true;
+    [SerializeField] private string upperBodyLayerName = "UpperBody";
+    [SerializeField] private float upperBodyWeightWhenAiming = 0f;
+    [SerializeField] private float upperBodyWeightWhenIdle = 1f;
 
     private int _currentTargetId = -1;
     private readonly HashSet<int> targetsInRange = new HashSet<int>();
+    private int upperBodyLayerIndex = -1;
 
     private void Awake()
     {
@@ -29,6 +34,8 @@ public class WeaponRangeController : MonoBehaviour
                 targetMask = 1 << layer;
         }
 
+        CacheUpperBodyLayer();
+
         // Скрываем радиус при старте
         ToggleRange(false);
     }
@@ -37,6 +44,8 @@ public class WeaponRangeController : MonoBehaviour
     {
         if (weaponEquippedAction) 
             weaponEquippedAction.OnEvent += OnWeaponEquipped; // Action channel (C# event style)
+
+        CacheUpperBodyLayer();
     }
 
     private void OnDisable()
@@ -148,5 +157,24 @@ public class WeaponRangeController : MonoBehaviour
         if (!animator || string.IsNullOrEmpty(aimParam)) return;
 
         animator.SetBool(aimParam, state);
+
+        if (!controlUpperBodyLayer) return;
+
+        if (upperBodyLayerIndex < 0)
+            CacheUpperBodyLayer();
+
+        if (upperBodyLayerIndex >= 0)
+            animator.SetLayerWeight(upperBodyLayerIndex, state ? upperBodyWeightWhenAiming : upperBodyWeightWhenIdle);
+    }
+
+    private void CacheUpperBodyLayer()
+    {
+        upperBodyLayerIndex = -1;
+        if (!controlUpperBodyLayer || !agentRoot) return;
+
+        var animator = agentRoot.Animator;
+        if (!animator || string.IsNullOrEmpty(upperBodyLayerName)) return;
+
+        upperBodyLayerIndex = animator.GetLayerIndex(upperBodyLayerName);
     }
 }

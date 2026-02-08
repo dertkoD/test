@@ -114,9 +114,6 @@ public class ShooterController : MonoBehaviour
             return;
         }
 
-        if (IsMoving())
-            return;
-
         Vector3 targetPos = GetTargetPosition(_currentTarget);
 
         if (!AimAtTarget(targetPos))
