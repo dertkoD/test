@@ -83,6 +83,11 @@ public class CursorAgentMovement : MonoBehaviour
         foreach (var l in links)
         {
             if (l == null || l.agent == null || l.animator == null) continue;
+            if (!IsAgentNavReady(l.agent))
+            {
+                l.animator.SetFloat(speedParam, 0f, speedDamp, Time.deltaTime);
+                continue;
+            }
 
             float speed01 = l.agent.velocity.magnitude / Mathf.Max(l.agent.speed, 0.01f);
 
@@ -117,7 +122,7 @@ public class CursorAgentMovement : MonoBehaviour
 
         var l = links[linkIndex];
         if (l == null || l.agent == null) return;
-        if (!l.agent.enabled || !l.agent.gameObject.activeInHierarchy) return;
+        if (!IsAgentNavReady(l.agent)) return;
 
         hasClicked = true;
         arrivedAgents.Clear();
@@ -133,6 +138,7 @@ public class CursorAgentMovement : MonoBehaviour
 
             var ag = l.agent;
             if (arrivedAgents.Contains(ag)) continue;
+            if (!IsAgentNavReady(ag)) continue;
 
             if (!ag.pathPending &&
                 ag.remainingDistance <= ag.stoppingDistance &&
@@ -147,4 +153,11 @@ public class CursorAgentMovement : MonoBehaviour
     public bool IsGameActive() => isGameActive;
 
     public void MoveAgentByIndex(int linkIndex, Vector3 destination) => SetAgentDestination(linkIndex, destination);
+
+    private static bool IsAgentNavReady(NavMeshAgent agent)
+    {
+        if (!agent) return false;
+        if (!agent.enabled || !agent.gameObject.activeInHierarchy) return false;
+        return agent.isOnNavMesh;
+    }
 }
