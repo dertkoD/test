@@ -7,6 +7,7 @@ public class Health : MonoBehaviour
     [Header("Stats")]
     [SerializeField] private int maxHp = 100;
     [SerializeField] private int currentHp;
+    [SerializeField] private string deathTrigger = "Death";
 
     [Header("Events In (UnityEvent Channel)")]
     [SerializeField] private DamageEventChannelSO damageEventChannel;
@@ -18,6 +19,8 @@ public class Health : MonoBehaviour
     public int CurrentHp => currentHp;
     public bool IsDead => currentHp <= 0;
 
+    private bool deathTriggered;
+
     private void Awake()
     {
         if (currentHp <= 0)
@@ -27,6 +30,8 @@ public class Health : MonoBehaviour
     private void OnEnable()
     {
         if (damageEventChannel) damageEventChannel.Register(OnDamageReceived);
+
+        deathTriggered = false;
 
         if (agentRoot)
             healthChangedAction?.Raise(agentRoot.AgentId, currentHp, maxHp);
@@ -50,5 +55,20 @@ public class Health : MonoBehaviour
         currentHp = after;
         
         healthChangedAction?.Raise(agentRoot.AgentId, currentHp, maxHp);
+
+        if (IsDead)
+            TriggerDeathAnimation();
+    }
+
+    private void TriggerDeathAnimation()
+    {
+        if (deathTriggered) return;
+        if (string.IsNullOrEmpty(deathTrigger)) return;
+
+        var animator = agentRoot.Animator;
+        if (!animator) return;
+
+        deathTriggered = true;
+        animator.SetTrigger(deathTrigger);
     }
 }

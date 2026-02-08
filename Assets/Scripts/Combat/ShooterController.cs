@@ -18,8 +18,6 @@ public class ShooterController : MonoBehaviour
     [SerializeField] private float aimAngleThreshold = 5f;
     [SerializeField] private float moveSpeedThreshold = 0.05f;
     [SerializeField] private float muzzleForwardOffset = 0.05f;
-    [SerializeField] private bool drawDebugAim;
-    [SerializeField] private float debugLineDuration = 0.1f;
 
     [Header("Events In (Action Channel)")]
     [SerializeField] private EnteredWeaponRangeActionChannelSO enteredRangeAction;
@@ -60,11 +58,6 @@ public class ShooterController : MonoBehaviour
 
         AimAtTarget(targetPos);
 
-        if (drawDebugAim)
-        {
-            Transform origin = shotOrigin ? shotOrigin : agentRoot.transform;
-            Debug.DrawLine(origin.position, targetPos, Color.red, debugLineDuration);
-        }
     }
 
     private void OnEnteredRange(int attackerId, int targetId)
