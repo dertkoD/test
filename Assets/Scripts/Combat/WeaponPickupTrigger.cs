@@ -4,7 +4,7 @@ public class WeaponPickupTrigger : MonoBehaviour
 {
     [Header("Weapon")]
     [SerializeField] private int weaponId = 1;
-    [SerializeField] private GameObject weaponPrefab;
+    [SerializeField] private WeaponView weaponPrefab;
 
     [Header("Filter")]
     [SerializeField] private LayerMask allowedPickerMask; // AgentBody
@@ -16,9 +16,6 @@ public class WeaponPickupTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // Лог для проверки, что событие реально приходит
-        Debug.Log($"[Pickup] Enter: other={other.name}, other.isTrigger={other.isTrigger}, layer={LayerMask.LayerToName(other.gameObject.layer)}");
-
         if (_consumed) return;
 
         // Если хотите, чтобы сенсоры не подбирали — оставляем.
@@ -28,11 +25,7 @@ public class WeaponPickupTrigger : MonoBehaviour
         int bit = 1 << other.gameObject.layer;
         if ((allowedPickerMask.value & bit) == 0) return;
 
-        if (!weaponPickedChannel)
-        {
-            Debug.LogWarning("[Pickup] weaponPickedChannel is NULL");
-            return;
-        }
+        if (!weaponPickedChannel) return;
 
         weaponPickedChannel.Raise(new WeaponPickupData
         {
@@ -43,13 +36,10 @@ public class WeaponPickupTrigger : MonoBehaviour
             weaponPrefab = weaponPrefab
         });
 
-        Debug.Log("[Pickup] Raised Entered");
     }
 
     public bool TryConsume(int pickerAgentId)
     {
-        Debug.Log($"[Pickup] TryConsume by agentId={pickerAgentId}, consumed={_consumed}");
-
         if (_consumed) return false;
         _consumed = true;
 
@@ -62,7 +52,6 @@ public class WeaponPickupTrigger : MonoBehaviour
                 weaponId = weaponId,
                 weaponPrefab = weaponPrefab
             });
-            Debug.Log("[Pickup] Raised Picked");
         }
 
         Destroy(gameObject);

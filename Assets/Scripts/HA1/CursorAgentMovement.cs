@@ -16,6 +16,9 @@ public class CursorAgentMovement : MonoBehaviour
     [Header("Scene References")]
     [SerializeField] private Camera cam;
 
+    [Header("Raycast")]
+    [SerializeField] private LayerMask clickMask = ~0;
+
     [Header("Agents (set in Inspector)")]
     [SerializeField] private List<AgentAnimLink> links = new();
 
@@ -29,6 +32,10 @@ public class CursorAgentMovement : MonoBehaviour
     [Header("Animator Params")]
     [Tooltip("Must match Animator parameter name used by your 1D Blend Tree")]
     [SerializeField] private string speedParam = "Speed";
+    [SerializeField] private string xVelocityParam = "xVelocity";
+    [SerializeField] private string yVelocityParam = "yVelocity";
+    [SerializeField] private bool writeVelocityParams = true;
+    [SerializeField] private bool normalizeVelocityParams = true;
 
     [Tooltip("Smoothing for SetFloat (damp time)")]
     [SerializeField] private float speedDamp = 0.1f;
@@ -79,6 +86,11 @@ public class CursorAgentMovement : MonoBehaviour
         foreach (var l in links)
         {
             if (l == null || l.agent == null || l.animator == null) continue;
+            if (!IsAgentNavReady(l.agent))
+            {
+                l.animator.SetFloat(speedParam, 0f, speedDamp, Time.deltaTime);
+                continue;
+            }
 
             float speed01 = l.agent.velocity.magnitude / Mathf.Max(l.agent.speed, 0.01f);
 
@@ -90,6 +102,16 @@ public class CursorAgentMovement : MonoBehaviour
             }
 
             l.animator.SetFloat(speedParam, speed01, speedDamp, Time.deltaTime);
+
+            if (writeVelocityParams)
+            {
+                Vector3 localVel = l.agent.transform.InverseTransformDirection(l.agent.velocity);
+                float denom = normalizeVelocityParams ? Mathf.Max(l.agent.speed, 0.01f) : 1f;
+                float xVal = localVel.x / denom;
+                float yVal = localVel.z / denom;
+                l.animator.SetFloat(xVelocityParam, xVal, speedDamp, Time.deltaTime);
+                l.animator.SetFloat(yVelocityParam, yVal, speedDamp, Time.deltaTime);
+            }
         }
     }
 
@@ -98,7 +120,7 @@ public class CursorAgentMovement : MonoBehaviour
         point = default;
 
         Ray ray = cam.ScreenPointToRay(Mouse.current.position.value);
-        if (Physics.Raycast(ray, out RaycastHit hit))
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, clickMask))
         {
             point = hit.point;
             return true;
@@ -113,7 +135,7 @@ public class CursorAgentMovement : MonoBehaviour
 
         var l = links[linkIndex];
         if (l == null || l.agent == null) return;
-        if (!l.agent.enabled || !l.agent.gameObject.activeInHierarchy) return;
+        if (!IsAgentNavReady(l.agent)) return;
 
         hasClicked = true;
         arrivedAgents.Clear();
@@ -129,6 +151,7 @@ public class CursorAgentMovement : MonoBehaviour
 
             var ag = l.agent;
             if (arrivedAgents.Contains(ag)) continue;
+            if (!IsAgentNavReady(ag)) continue;
 
             if (!ag.pathPending &&
                 ag.remainingDistance <= ag.stoppingDistance &&
@@ -140,7 +163,11 @@ public class CursorAgentMovement : MonoBehaviour
     }
 
     public void SetGameActive(bool value) => isGameActive = value;
-    public bool IsGameActive() => isGameActive;
 
-    public void MoveAgentByIndex(int linkIndex, Vector3 destination) => SetAgentDestination(linkIndex, destination);
+    private static bool IsAgentNavReady(NavMeshAgent agent)
+    {
+        if (!agent) return false;
+        if (!agent.enabled || !agent.gameObject.activeInHierarchy) return false;
+        return agent.isOnNavMesh;
+    }
 }

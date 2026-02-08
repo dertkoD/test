@@ -4,6 +4,7 @@ public class WeaponEquipper : MonoBehaviour
 {
     [SerializeField] private AgentRoot agentRoot;
     [SerializeField] private Transform handSocket;
+    [SerializeField] private ShooterController shooter;
 
     [Header("Channel")]
     [SerializeField] private WeaponPickedEventChannelSO weaponPickedChannel;
@@ -11,7 +12,7 @@ public class WeaponEquipper : MonoBehaviour
     [Header("Broadcasting To")]
     [SerializeField] private WeaponEquippedActionChannelSO weaponEquippedAction;
 
-    private GameObject _currentWeaponInstance;
+    private WeaponView _currentWeaponInstance;
 
     private bool HasWeapon => _currentWeaponInstance != null;
 
@@ -57,7 +58,10 @@ public class WeaponEquipper : MonoBehaviour
             _currentWeaponInstance = Instantiate(data.weaponPrefab, handSocket);
             _currentWeaponInstance.transform.localPosition = Vector3.zero;
             _currentWeaponInstance.transform.localRotation = Quaternion.identity;
-            
+
+            if (shooter)
+                shooter.SetShotOrigin(_currentWeaponInstance.Muzzle ? _currentWeaponInstance.Muzzle : handSocket);
+
             if (weaponEquippedAction)
                 weaponEquippedAction.Raise(agentRoot.AgentId, data.weaponId);
         }

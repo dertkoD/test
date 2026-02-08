@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2749307842633948417
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1189628192695348670}
+  m_Layer: 0
+  m_Name: Muzzle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1189628192695348670
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2749307842633948417}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.001, y: 0.0593, z: -0.483}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2516042923461296795}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2514294711424659331
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10,7 +41,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1117582899397640, guid: 689946d975a0e55449b1e7ae41933e73, type: 3}
       propertyPath: m_Name
-      value: M4_8 Variant
+      value: WeaponPrefab
       objectReference: {fileID: 0}
     - target: {fileID: 4035219142733080, guid: 689946d975a0e55449b1e7ae41933e73, type: 3}
       propertyPath: m_LocalPosition.x
@@ -54,18 +85,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4035219142733080, guid: 689946d975a0e55449b1e7ae41933e73, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1189628192695348670}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1117582899397640, guid: 689946d975a0e55449b1e7ae41933e73, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2508387867722768939}
+      addedObject: {fileID: 5123456789012345678}
   m_SourcePrefab: {fileID: 100100000, guid: 689946d975a0e55449b1e7ae41933e73, type: 3}
 --- !u!1 &2515095295300594571 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1117582899397640, guid: 689946d975a0e55449b1e7ae41933e73, type: 3}
   m_PrefabInstance: {fileID: 2514294711424659331}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2508387867722768939
+--- !u!114 &5123456789012345678
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -74,10 +108,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 2515095295300594571}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 507c4b63e737d4955b0cb3ff7aef2ebb, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f60b8ac1d9204c469c5dd04c3380633, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WeaponEquipper
-  agentRoot: {fileID: 0}
-  handSocket: {fileID: 0}
-  weaponPickedChannel: {fileID: 11400000, guid: 41b7f059c40789b41bc6ce9bb1f009e8, type: 2}
-  weaponEquippedAction: {fileID: 11400000, guid: 0483af2247153c14b8b37ecaff7b72a3, type: 2}
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponView
+  muzzle: {fileID: 1189628192695348670}
+--- !u!4 &2516042923461296795 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4035219142733080, guid: 689946d975a0e55449b1e7ae41933e73, type: 3}
+  m_PrefabInstance: {fileID: 2514294711424659331}
+  m_PrefabAsset: {fileID: 0}

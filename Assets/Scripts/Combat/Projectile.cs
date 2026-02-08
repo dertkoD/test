@@ -10,15 +10,17 @@ public class Projectile : MonoBehaviour
     private int _targetId;
     private int _damage;
     private DamageEventChannelSO _damageEventChannel;
+    private Collider _attackerCollider;
 
     private float _alive;
 
-    public void Initialize(int attackerId, int targetId, int damage, DamageEventChannelSO damageEventChannel)
+    public void Initialize(int attackerId, int targetId, int damage, DamageEventChannelSO damageEventChannel, Collider attackerCollider)
     {
         _attackerId = attackerId;
         _targetId = targetId;
         _damage = damage;
         _damageEventChannel = damageEventChannel;
+        _attackerCollider = attackerCollider;
     }
 
     private void Update()
@@ -32,17 +34,35 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        var info = new DamageInfo
-        {
-            attackerAgentId = _attackerId,
-            targetAgentId   = _targetId,
-            damage          = _damage,
-            hpBefore        = -1,
-            hpAfter         = -1,
-            hitPoint        = transform.position
-        };
+        if (other.isTrigger) return;
 
-        _damageEventChannel?.Raise(info);
+        if (_attackerCollider && other == _attackerCollider)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        if (AgentRoot.TryGetByCollider(other, out var otherAgent))
+        {
+            if (otherAgent.AgentId != _attackerId)
+            {
+                var info = new DamageInfo
+                {
+                    attackerAgentId = _attackerId,
+                    targetAgentId   = otherAgent.AgentId,
+                    damage          = _damage,
+                    hpBefore        = -1,
+                    hpAfter         = -1,
+                    hitPoint        = transform.position
+                };
+
+                _damageEventChannel?.Raise(info);
+            }
+
+            Destroy(gameObject);
+            return;
+        }
+
         Destroy(gameObject);
     }
 }
