@@ -129,14 +129,14 @@ public class ShooterController : MonoBehaviour
 
         Transform origin = shotOrigin ? shotOrigin : agentRoot.transform;
         Vector3 originPos = origin.position;
-        Vector3 forward = origin.forward;
-        if (forward.sqrMagnitude < 0.0001f)
-            forward = agentRoot.transform.forward;
+        Vector3 dir = targetPos - originPos;
+        if (dir.sqrMagnitude < 0.0001f)
+            dir = (aimPivot ? aimPivot.forward : agentRoot.transform.forward);
 
-        forward = forward.normalized;
-        Quaternion rotation = Quaternion.LookRotation(forward, Vector3.up);
+        dir = dir.normalized;
+        Quaternion rotation = Quaternion.LookRotation(dir, Vector3.up);
         float offset = Mathf.Max(0f, muzzleForwardOffset);
-        Vector3 spawnPos = originPos + (forward * offset);
+        Vector3 spawnPos = originPos + (dir * offset);
 
         Projectile proj = Instantiate(projectilePrefab, spawnPos, rotation);
         proj.Initialize(
