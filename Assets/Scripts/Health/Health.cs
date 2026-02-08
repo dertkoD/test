@@ -58,7 +58,10 @@ public class Health : MonoBehaviour
         healthChangedAction?.Raise(agentRoot.AgentId, currentHp, maxHp);
 
         if (IsDead)
+        {
             TriggerDeathAnimation();
+            DisableDeadComponents();
+        }
     }
 
     private void TriggerDeathAnimation()
@@ -73,5 +76,29 @@ public class Health : MonoBehaviour
         if (!string.IsNullOrEmpty(hasWeaponParam))
             animator.SetBool(hasWeaponParam, false);
         animator.SetTrigger(deathTrigger);
+    }
+
+    private void DisableDeadComponents()
+    {
+        if (agentRoot == null) return;
+
+        var navAgent = agentRoot.NavAgent;
+        if (navAgent)
+        {
+            navAgent.isStopped = true;
+            navAgent.ResetPath();
+            navAgent.enabled = false;
+        }
+
+        var shooter = agentRoot.Shooter;
+        if (shooter)
+        {
+            shooter.StopShooting();
+            shooter.enabled = false;
+        }
+
+        var range = agentRoot.WeaponRange;
+        if (range)
+            range.enabled = false;
     }
 }

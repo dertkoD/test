@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class AgentRoot : MonoBehaviour
 {
@@ -12,12 +13,18 @@ public class AgentRoot : MonoBehaviour
     [SerializeField] private Collider pickupBodyCollider;
     [SerializeField] private Transform aimTarget;
     [SerializeField] private Health health;
+    [SerializeField] private NavMeshAgent navAgent;
+    [SerializeField] private ShooterController shooter;
+    [SerializeField] private WeaponRangeController weaponRange;
     public int AgentId => agentId; 
     public Transform HandSocket => handSocket; 
     public Animator Animator => animator;
     public Collider PickupBodyCollider => pickupBodyCollider;
     public Transform AimTarget => aimTarget;
     public Health Health => health;
+    public NavMeshAgent NavAgent => navAgent;
+    public ShooterController Shooter => shooter;
+    public WeaponRangeController WeaponRange => weaponRange;
 
     public static bool TryGetById(int id, out AgentRoot root) => Registry.TryGetValue(id, out root);
     public static bool TryGetByCollider(Collider collider, out AgentRoot root) => ColliderRegistry.TryGetValue(collider, out root);
