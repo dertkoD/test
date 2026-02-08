@@ -9,23 +9,29 @@ public class Health : MonoBehaviour
     [SerializeField] private int currentHp;
     [SerializeField] private string deathTrigger = "Death";
     [SerializeField] private string hasWeaponParam = "HasWeapon";
+    
+    [SerializeField] private int otherAgentId = 2;
+   
 
     [Header("Events In (UnityEvent Channel)")]
     [SerializeField] private DamageEventChannelSO damageEventChannel;
 
     [Header("Events Out (Action Channel)")]
     [SerializeField] private HealthChangedActionChannelSO healthChangedAction;
+    [SerializeField] private GameOverActionChannelSO gameOverAction;
 
     public int MaxHp => maxHp;
     public int CurrentHp => currentHp;
     public bool IsDead => currentHp <= 0;
 
     private bool deathTriggered;
+    private bool gameOverRaised;
 
     private void Awake()
     {
         if (currentHp <= 0)
             currentHp = maxHp;
+        gameOverRaised = false;
     }
 
     private void OnEnable()
@@ -61,6 +67,12 @@ public class Health : MonoBehaviour
         {
             TriggerDeathAnimation();
             DisableDeadComponents();
+            
+            if (!gameOverRaised && gameOverAction)
+            {
+                gameOverRaised = true;
+                gameOverAction.Raise(otherAgentId);
+            }
         }
     }
 

@@ -1,27 +1,44 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameMenuManager : MonoBehaviour
 {
     [Header("UI Panels")]
     [SerializeField] private GameObject startMenuPanel;
-    [SerializeField] private GameObject gameHUD;
+    [SerializeField] private GameObject endMenuPanel;
 
     [Header("UI Elements")]
     [SerializeField] private Button startButton;
+    [SerializeField] private Button restartButton;
     [SerializeField] private TextMeshProUGUI instructionsText;
-    
     [SerializeField] private TextMeshProUGUI victoryText; 
+    
+    [Header("Events")]
+    [SerializeField] private GameOverActionChannelSO gameOverAction;
 
     [Header("Game Systems")]
     [SerializeField] private CursorAgentMovement raceManager;
     [SerializeField] private CameraRail cameraRail;
+    
+    [Header("Names")]
+    [SerializeField] private string agent1Name = "Swat";
+    [SerializeField] private string agent2Name = "Anime";
 
     private bool isGameStarted;
+    private string sceneName;
 
-    private void Awake()
+    private void OnEnable()
     {
+        if (gameOverAction)
+            gameOverAction.OnEvent += OnGameOver;
+    }
+
+    private void OnDisable()
+    {
+        if (gameOverAction)
+            gameOverAction.OnEvent -= OnGameOver;
     }
 
     private void Start()
@@ -34,9 +51,8 @@ public class GameMenuManager : MonoBehaviour
         isGameStarted = false;
 
         startMenuPanel.SetActive(true);
-        gameHUD.SetActive(false);
+        endMenuPanel.SetActive(false);
         
-       
         victoryText.text = ""; 
 
         raceManager.SetGameActive(false);
@@ -44,19 +60,25 @@ public class GameMenuManager : MonoBehaviour
 
         startButton.onClick.RemoveAllListeners();
         startButton.onClick.AddListener(StartGame);
+        
+        restartButton.onClick.RemoveAllListeners();
+        restartButton.onClick.AddListener(RestartGame);
 
         SetInstructionsText();
     }
 
-  
-    public void OnAgentReachedGoal(string agentName)
+    public void OnGameOver(int winnerAgentId)
     {
-        if (victoryText != null)
-        {
-            victoryText.text = agentName + " Win!";
-          
-            raceManager.SetGameActive(false);
-        }
+        string winner =
+            winnerAgentId == 1 ? agent1Name :
+            winnerAgentId == 2 ? agent2Name :
+            $"Agent {winnerAgentId}";
+
+        victoryText.text = winner + " Win!";
+        
+        endMenuPanel.SetActive(true);
+        raceManager.SetGameActive(false);
+        cameraRail.SetGameActive(false);
     }
 
     public void StartGame()
@@ -65,11 +87,16 @@ public class GameMenuManager : MonoBehaviour
 
         isGameStarted = true;
         startMenuPanel.SetActive(false);
-        gameHUD.SetActive(true);
         victoryText.text = ""; 
 
         raceManager.SetGameActive(true);
         cameraRail.SetGameActive(true);
+    }
+
+    public void RestartGame()
+    {
+        sceneName = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene(sceneName);
     }
 
     private void SetInstructionsText()
@@ -77,13 +104,15 @@ public class GameMenuManager : MonoBehaviour
         instructionsText.text =
             "CONTROLS\n\n" +
             "Agent Control:\n" +
-            "• Left Mouse Button - Set destination\n\n" +
+            "• Left Mouse Button - Set destination for swat agent\n" +
+            "• Right Mouse Button - Set destination for anime agent\n\n" +
             "Camera Control:\n" +
             "• W / ↑ - Move forward\n" +
             "• S / ↓ - Move backward\n\n" +
             "OBJECTIVE:\n" +
-            "Guide both agents to the goal\n" +
-            "Avoid moving obstacles\n\n" +
+            "Guide both agents to pick up weapons\n" +
+            "Let them shoot each other!\n" +
+            "The agent left standing wins\n\n" +
             "Click START to begin";
     }
 }
