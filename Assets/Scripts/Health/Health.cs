@@ -87,7 +87,9 @@ public class Health : MonoBehaviour
         {
             navAgent.isStopped = true;
             navAgent.ResetPath();
-            navAgent.enabled = false;
+            navAgent.speed = 0f;
+            navAgent.acceleration = 0f;
+            navAgent.angularSpeed = 0f;
         }
 
         var shooter = agentRoot.Shooter;
