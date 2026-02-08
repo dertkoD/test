@@ -18,7 +18,6 @@ public class CursorAgentMovement : MonoBehaviour
 
     [Header("Raycast")]
     [SerializeField] private LayerMask clickMask = ~0;
-    [SerializeField] private QueryTriggerInteraction triggerInteraction = QueryTriggerInteraction.Ignore;
 
     [Header("Agents (set in Inspector)")]
     [SerializeField] private List<AgentAnimLink> links = new();
@@ -121,7 +120,7 @@ public class CursorAgentMovement : MonoBehaviour
         point = default;
 
         Ray ray = cam.ScreenPointToRay(Mouse.current.position.value);
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, clickMask, triggerInteraction))
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, clickMask))
         {
             point = hit.point;
             return true;
@@ -164,9 +163,6 @@ public class CursorAgentMovement : MonoBehaviour
     }
 
     public void SetGameActive(bool value) => isGameActive = value;
-    public bool IsGameActive() => isGameActive;
-
-    public void MoveAgentByIndex(int linkIndex, Vector3 destination) => SetAgentDestination(linkIndex, destination);
 
     private static bool IsAgentNavReady(NavMeshAgent agent)
     {

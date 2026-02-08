@@ -23,8 +23,8 @@ public class UIHealth : MonoBehaviour
 
     private void OnHealthChanged(int agentId, int currentHp, int maxHp)
     {
-        if (agentId == agent1Id && agent1Text) agent1Text.text = $"Agent {agent1Id}: {currentHp}/{maxHp}";
+        if (agentId == agent1Id && agent1Text) agent1Text.text = $"Swat (agent {agent1Id}): {currentHp}/{maxHp}";
 
-        if (agentId == agent2Id && agent2Text) agent2Text.text = $"Agent {agent2Id}: {currentHp}/{maxHp}";
+        if (agentId == agent2Id && agent2Text) agent2Text.text = $"Anime (agent {agent2Id}): {currentHp}/{maxHp}";
     }
 }
