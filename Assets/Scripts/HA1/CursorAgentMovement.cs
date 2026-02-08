@@ -16,6 +16,10 @@ public class CursorAgentMovement : MonoBehaviour
     [Header("Scene References")]
     [SerializeField] private Camera cam;
 
+    [Header("Raycast")]
+    [SerializeField] private LayerMask clickMask = ~0;
+    [SerializeField] private QueryTriggerInteraction triggerInteraction = QueryTriggerInteraction.Ignore;
+
     [Header("Agents (set in Inspector)")]
     [SerializeField] private List<AgentAnimLink> links = new();
 
@@ -98,7 +102,7 @@ public class CursorAgentMovement : MonoBehaviour
         point = default;
 
         Ray ray = cam.ScreenPointToRay(Mouse.current.position.value);
-        if (Physics.Raycast(ray, out RaycastHit hit))
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, clickMask, triggerInteraction))
         {
             point = hit.point;
             return true;
