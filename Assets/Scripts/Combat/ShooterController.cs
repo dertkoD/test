@@ -131,6 +131,10 @@ public class ShooterController : MonoBehaviour
 
         Transform origin = shotOrigin ? shotOrigin : agentRoot.transform;
         Vector3 originPos = origin.position;
+
+        if (_currentTarget.PickupBodyCollider)
+            targetPos = _currentTarget.PickupBodyCollider.ClosestPoint(originPos);
+
         Vector3 dir = targetPos - originPos;
         if (dir.sqrMagnitude < 0.0001f)
             dir = (aimPivot ? aimPivot.forward : agentRoot.transform.forward);
@@ -203,7 +207,6 @@ public class ShooterController : MonoBehaviour
     private Vector3 GetTargetPosition(AgentRoot target)
     {
         if (!target) return Vector3.zero;
-        if (target.AimTarget) return target.AimTarget.position;
         if (target.PickupBodyCollider) return target.PickupBodyCollider.bounds.center;
         return target.transform.position;
     }
