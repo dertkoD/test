@@ -8,6 +8,7 @@ public class Health : MonoBehaviour
     [SerializeField] private int maxHp = 100;
     [SerializeField] private int currentHp;
     [SerializeField] private string deathTrigger = "Death";
+    [SerializeField] private string hasWeaponParam = "HasWeapon";
 
     [Header("Events In (UnityEvent Channel)")]
     [SerializeField] private DamageEventChannelSO damageEventChannel;
@@ -69,6 +70,8 @@ public class Health : MonoBehaviour
         if (!animator) return;
 
         deathTriggered = true;
+        if (!string.IsNullOrEmpty(hasWeaponParam))
+            animator.SetBool(hasWeaponParam, false);
         animator.SetTrigger(deathTrigger);
     }
 }
