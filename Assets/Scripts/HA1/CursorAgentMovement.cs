@@ -33,6 +33,10 @@ public class CursorAgentMovement : MonoBehaviour
     [Header("Animator Params")]
     [Tooltip("Must match Animator parameter name used by your 1D Blend Tree")]
     [SerializeField] private string speedParam = "Speed";
+    [SerializeField] private string xVelocityParam = "xVelocity";
+    [SerializeField] private string yVelocityParam = "yVelocity";
+    [SerializeField] private bool writeVelocityParams = true;
+    [SerializeField] private bool normalizeVelocityParams = true;
 
     [Tooltip("Smoothing for SetFloat (damp time)")]
     [SerializeField] private float speedDamp = 0.1f;
@@ -99,6 +103,16 @@ public class CursorAgentMovement : MonoBehaviour
             }
 
             l.animator.SetFloat(speedParam, speed01, speedDamp, Time.deltaTime);
+
+            if (writeVelocityParams)
+            {
+                Vector3 localVel = l.agent.transform.InverseTransformDirection(l.agent.velocity);
+                float denom = normalizeVelocityParams ? Mathf.Max(l.agent.speed, 0.01f) : 1f;
+                float xVal = localVel.x / denom;
+                float yVal = localVel.z / denom;
+                l.animator.SetFloat(xVelocityParam, xVal, speedDamp, Time.deltaTime);
+                l.animator.SetFloat(yVelocityParam, yVal, speedDamp, Time.deltaTime);
+            }
         }
     }
 

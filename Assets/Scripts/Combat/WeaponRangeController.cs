@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class WeaponRangeController : MonoBehaviour
@@ -14,8 +15,10 @@ public class WeaponRangeController : MonoBehaviour
 
     [Header("Broadcasting To")]
     [SerializeField] private EnteredWeaponRangeActionChannelSO enteredRangeAction;
+    [SerializeField] private string aimParam = "Aim";
 
     private int _currentTargetId = -1;
+    private readonly HashSet<int> targetsInRange = new HashSet<int>();
 
     private void Awake()
     {
@@ -40,6 +43,10 @@ public class WeaponRangeController : MonoBehaviour
     {
         if (weaponEquippedAction) 
             weaponEquippedAction.OnEvent -= OnWeaponEquipped;
+
+        targetsInRange.Clear();
+        _currentTargetId = -1;
+        SetAim(false);
     }
 
     private void OnWeaponEquipped(int agentId, int weaponId)
@@ -61,6 +68,13 @@ public class WeaponRangeController : MonoBehaviour
     {
         if (rangeCollider) rangeCollider.enabled = state;
         if (rangeVisual) rangeVisual.SetActive(state);
+
+        if (!state)
+        {
+            targetsInRange.Clear();
+            _currentTargetId = -1;
+            SetAim(false);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -77,9 +91,16 @@ public class WeaponRangeController : MonoBehaviour
         // Если это агент и это НЕ я
         if (otherAgent != null && otherAgent.AgentId != agentRoot.AgentId)
         {
-            // Сообщаем ShooterController'у начать огонь
-            _currentTargetId = otherAgent.AgentId;
-            enteredRangeAction.Raise(agentRoot.AgentId, _currentTargetId);
+            if (targetsInRange.Add(otherAgent.AgentId))
+            {
+                SetAim(true);
+
+                if (_currentTargetId == -1)
+                {
+                    _currentTargetId = otherAgent.AgentId;
+                    enteredRangeAction.Raise(agentRoot.AgentId, _currentTargetId);
+                }
+            }
         }
     }
 
@@ -94,10 +115,38 @@ public class WeaponRangeController : MonoBehaviour
 
         if (!AgentRoot.TryGetByCollider(other, out var otherAgent)) return;
 
-        if (otherAgent.AgentId == _currentTargetId)
+        if (targetsInRange.Remove(otherAgent.AgentId))
         {
-            _currentTargetId = -1;
-            enteredRangeAction.Raise(agentRoot.AgentId, -1);
+            if (otherAgent.AgentId == _currentTargetId)
+            {
+                if (targetsInRange.Count > 0)
+                {
+                    foreach (var id in targetsInRange)
+                    {
+                        _currentTargetId = id;
+                        enteredRangeAction.Raise(agentRoot.AgentId, _currentTargetId);
+                        break;
+                    }
+                }
+                else
+                {
+                    _currentTargetId = -1;
+                    enteredRangeAction.Raise(agentRoot.AgentId, -1);
+                }
+            }
+
+            if (targetsInRange.Count == 0)
+                SetAim(false);
         }
+    }
+
+    private void SetAim(bool state)
+    {
+        if (!agentRoot) return;
+
+        var animator = agentRoot.Animator;
+        if (!animator || string.IsNullOrEmpty(aimParam)) return;
+
+        animator.SetBool(aimParam, state);
     }
 }
