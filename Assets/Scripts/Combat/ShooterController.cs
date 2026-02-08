@@ -18,6 +18,8 @@ public class ShooterController : MonoBehaviour
     [SerializeField] private float aimAngleThreshold = 5f;
     [SerializeField] private float moveSpeedThreshold = 0.05f;
     [SerializeField] private float muzzleForwardOffset = 0.05f;
+    [SerializeField] private bool drawDebugAim;
+    [SerializeField] private float debugLineDuration = 0.1f;
 
     [Header("Events In (Action Channel)")]
     [SerializeField] private EnteredWeaponRangeActionChannelSO enteredRangeAction;
@@ -54,11 +56,15 @@ public class ShooterController : MonoBehaviour
     {
         if (_currentTargetId == -1 || !_currentTarget) return;
 
-        Vector3 targetPos = _currentTarget.PickupBodyCollider
-            ? _currentTarget.PickupBodyCollider.bounds.center
-            : _currentTarget.transform.position;
+        Vector3 targetPos = GetTargetPosition(_currentTarget);
 
         AimAtTarget(targetPos);
+
+        if (drawDebugAim)
+        {
+            Transform origin = shotOrigin ? shotOrigin : agentRoot.transform;
+            Debug.DrawLine(origin.position, targetPos, Color.red, debugLineDuration);
+        }
     }
 
     private void OnEnteredRange(int attackerId, int targetId)
@@ -77,9 +83,7 @@ public class ShooterController : MonoBehaviour
 
         if (_currentTarget)
         {
-            Vector3 targetPos = _currentTarget.PickupBodyCollider
-                ? _currentTarget.PickupBodyCollider.bounds.center
-                : _currentTarget.transform.position;
+            Vector3 targetPos = GetTargetPosition(_currentTarget);
             AimAtTarget(targetPos);
         }
 
@@ -120,9 +124,7 @@ public class ShooterController : MonoBehaviour
         if (IsMoving())
             return;
 
-        Vector3 targetPos = _currentTarget.PickupBodyCollider
-            ? _currentTarget.PickupBodyCollider.bounds.center
-            : _currentTarget.transform.position;
+        Vector3 targetPos = GetTargetPosition(_currentTarget);
 
         if (!AimAtTarget(targetPos))
             return;
@@ -196,6 +198,14 @@ public class ShooterController : MonoBehaviour
             return true;
 
         return false;
+    }
+
+    private Vector3 GetTargetPosition(AgentRoot target)
+    {
+        if (!target) return Vector3.zero;
+        if (target.AimTarget) return target.AimTarget.position;
+        if (target.PickupBodyCollider) return target.PickupBodyCollider.bounds.center;
+        return target.transform.position;
     }
 
     public void StopShooting()

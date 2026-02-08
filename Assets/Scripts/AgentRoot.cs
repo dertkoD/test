@@ -10,11 +10,13 @@ public class AgentRoot : MonoBehaviour
     [SerializeField] private Transform handSocket;
     [SerializeField] private Animator animator;
     [SerializeField] private Collider pickupBodyCollider;
+    [SerializeField] private Transform aimTarget;
     [SerializeField] private Health health;
     public int AgentId => agentId; 
     public Transform HandSocket => handSocket; 
     public Animator Animator => animator;
     public Collider PickupBodyCollider => pickupBodyCollider;
+    public Transform AimTarget => aimTarget;
     public Health Health => health;
 
     public static bool TryGetById(int id, out AgentRoot root) => Registry.TryGetValue(id, out root);
